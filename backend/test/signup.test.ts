@@ -1,4 +1,4 @@
-import { getAccount, signup } from "../src/main";
+import { getAccount, signup } from "../src/signup";
 
 test.each(["97456321558", "71428793860", "87748248800"])(
   "Deve criar uma conta para o passageiro",

@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import pgp from "pg-promise";
+import { Account, getConnection } from "./database";
 
 export function validateCpf(cpf: string) {
   if (!cpf) return false;
@@ -36,8 +36,19 @@ function extractCheckDigit(cpf: string) {
   return cpf.slice(9);
 }
 
-export async function signup(input: any): Promise<any> {
-  const connection = pgp()("postgres://postgres:mypgdbpass@localhost:5432");
+interface SignupInput {
+  name: string;
+  email: string;
+  cpf: string;
+  carPlate?: string;
+  isPassenger: boolean;
+  isDriver?: boolean;
+}
+
+export async function signup(
+  input: SignupInput
+): Promise<{ accountId: string }> {
+  const connection = getConnection();
   try {
     const accountId = crypto.randomUUID();
     const [account] = await connection.query(
@@ -48,7 +59,7 @@ export async function signup(input: any): Promise<any> {
     if (isInvalidName(input.name)) throw new Error("Invalid name");
     if (isInvalidEmail(input.email)) throw new Error("Invalid email");
     if (!validateCpf(input.cpf)) throw new Error("Invalid cpf");
-    if (input.isDriver && isInvalidCarPlate(input.carPlate))
+    if (input.isDriver && input.carPlate && isInvalidCarPlate(input.carPlate))
       throw new Error("Invalid car plate");
     await connection.query(
       "insert into cccat14.account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) values ($1, $2, $3, $4, $5, $6, $7)",
@@ -82,8 +93,8 @@ function isInvalidCarPlate(carPlate: string) {
   return !carPlate.match(/[A-Z]{3}[0-9]{4}/);
 }
 
-export async function getAccount(accountId: string) {
-  const connection = pgp()("postgres://postgres:mypgdbpass@localhost:5432");
+export async function getAccount(accountId: string): Promise<Account> {
+  const connection = getConnection();
   const [account] = await connection.query(
     "select * from cccat14.account where account_id = $1",
     [accountId]
