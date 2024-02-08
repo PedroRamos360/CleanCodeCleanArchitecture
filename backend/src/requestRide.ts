@@ -46,6 +46,7 @@ async function getRidesByPassengerId(passengerId: string): Promise<Ride[]> {
 
 export async function requestRide(input: RequestRideInput) {
   const account = await getAccount(input.passengerId);
+  if (!account) throw new Error("Account not found");
   if (!account.is_passenger) throw new Error("Account is not a passenger");
   const passengerRides = await getRidesByPassengerId(input.passengerId);
   const ongoingRide = passengerRides.find(
@@ -90,7 +91,7 @@ export async function getRide(rideId: string): Promise<GetRideOutput> {
   const passengerDetails = await getAccount(ride.passenger_id);
   const driverDetails = ride.driver_id
     ? await getAccount(ride.driver_id)
-    : undefined;
+    : null;
 
   delete ride["passenger_id"];
   delete ride["driver_id"];
