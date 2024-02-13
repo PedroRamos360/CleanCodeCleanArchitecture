@@ -1,5 +1,5 @@
 import AccountDAO from "../src/AccountDAO";
-import AccountDAODatabase from "../src/AccountDAODatabase";
+import { AccountDAODatabase } from "../src/AccountDAODatabase";
 import { Signup } from "../src/Signup";
 import sinon from "sinon";
 

@@ -13,7 +13,7 @@ export interface SaveAccount {
   isDriver?: boolean;
 }
 
-export default class AccountDAODatabase
+export class AccountDAODatabase
   implements AccountDAO, SignupAccountDAO, GetAccountAccountDAO
 {
   async save(account: SaveAccount) {

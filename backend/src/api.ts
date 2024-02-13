@@ -1,7 +1,7 @@
 import assert from "assert";
 import express, { Response } from "express";
 import morgan from "morgan";
-import AccountDAODatabase from "./AccountDAODatabase";
+import { AccountDAODatabase } from "./AccountDAODatabase";
 import { Signup } from "./Signup";
 import RideDAODatabase from "./RideDAODatabase";
 
@@ -17,6 +17,7 @@ function routeTreatment(
     })
     .catch((error: Error) => {
       res.status(errorCode).send({ error: error.message });
+      throw error;
     });
 }
 
@@ -31,20 +32,34 @@ app.post("/signup", (req, res) => {
   assert(req.body);
   const accountDao = new AccountDAODatabase();
   const signup = new Signup(accountDao);
-  void routeTreatment(res, signup.execute, req.body, 422);
+
+  void routeTreatment(
+    res,
+    (input: any) => signup.execute(input),
+    req.body,
+    422
+  );
 });
 app.get("/account/:accountId", (req, res) => {
   assert(req.params);
   const accountDao = new AccountDAODatabase();
-  void routeTreatment(res, accountDao.getById, req.params.accountId);
+  void routeTreatment(
+    res,
+    (input: any) => accountDao.getById(input),
+    req.params.accountId
+  );
 });
 app.post("/request-ride", (req, res) => {
   assert(req.body);
   const rideDao = new RideDAODatabase();
-  void routeTreatment(res, rideDao.save, req.body);
+  void routeTreatment(res, (input: any) => rideDao.save(input), req.body);
 });
 app.get("/ride/:rideId", (req, res) => {
   assert(req.params);
   const rideDao = new RideDAODatabase();
-  void routeTreatment(res, rideDao.getById, req.params.rideId);
+  void routeTreatment(
+    res,
+    (input: any) => rideDao.getById(input),
+    req.params.rideId
+  );
 });

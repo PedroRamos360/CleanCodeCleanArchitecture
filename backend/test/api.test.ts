@@ -20,7 +20,7 @@ test("Deve criar uma conta para o passageiro pela API", async function () {
   );
   const outputSignup = responseSignup.data;
   const responseGetAccount = await axios.get(
-    `http://localhost:3000/accounts/${outputSignup.accountId}`
+    `http://localhost:3000/account/${outputSignup.accountId}`
   );
   const outputGetAccount = responseGetAccount.data;
   // then
@@ -66,7 +66,7 @@ test("Deve criar uma conta para o motorista", async function () {
   );
   const outputSignup = responseSignup.data;
   const responseGetAccount = await axios.get(
-    `http://localhost:3000/accounts/${outputSignup.accountId}`
+    `http://localhost:3000/account/${outputSignup.accountId}`
   );
   const outputGetAccount = responseGetAccount.data;
   // then

@@ -1,4 +1,4 @@
-import AccountDAODatabase from "../src/AccountDAODatabase";
+import { AccountDAODatabase } from "../src/AccountDAODatabase";
 import GetRide from "../src/GetRide";
 import { RequestRide } from "../src/RequestRide";
 import RideDAODatabase from "../src/RideDAODatabase";
