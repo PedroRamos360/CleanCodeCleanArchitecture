@@ -4,6 +4,8 @@ import morgan from "morgan";
 import { AccountDAODatabase } from "./AccountDAODatabase";
 import { Signup } from "./Signup";
 import RideDAODatabase from "./RideDAODatabase";
+import { AcceptRide } from "./AcceptRide";
+import { StartRide } from "./StartRide";
 
 function routeTreatment(
   res: Response,
@@ -61,5 +63,26 @@ app.get("/ride/:rideId", (req, res) => {
     res,
     (input: any) => rideDao.getById(input),
     req.params.rideId
+  );
+});
+app.post("/accept-ride", (req, res) => {
+  assert(req.body);
+  const rideDao = new RideDAODatabase();
+  const accountDao = new AccountDAODatabase();
+  const acceptRide = new AcceptRide(rideDao, accountDao);
+  void routeTreatment(
+    res,
+    (input: any) => acceptRide.execute(input.rideId, input.driverId),
+    req.body
+  );
+});
+app.post("/start-ride", (req, res) => {
+  assert(req.body);
+  const rideDao = new RideDAODatabase();
+  const startRide = new StartRide(rideDao);
+  void routeTreatment(
+    res,
+    (input: any) => startRide.execute(input.rideId),
+    req.body
   );
 });

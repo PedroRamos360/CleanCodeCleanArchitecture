@@ -40,4 +40,34 @@ export default class RideDAODatabase implements RideDAO {
     await connection.$pool.end();
     return rides;
   }
+
+  async update(ride: SaveRide) {
+    const connection = getConnection();
+    await connection.query(
+      "update cccat14.ride set passenger_id = $2, from_lat = $3, from_long = $4, to_lat = $5, to_long = $6, status = $7, date = $8, distance = $9, driver_id = $10 where ride_id = $1",
+      [
+        ride.rideId,
+        ride.passengerId,
+        ride.fromLat,
+        ride.fromLong,
+        ride.toLat,
+        ride.toLong,
+        ride.status,
+        ride.date,
+        ride.distance,
+        ride.driverId,
+      ]
+    );
+    await connection.$pool.end();
+  }
+
+  async getRidesByDriverId(driverId: string): Promise<Ride[]> {
+    const connection = getConnection();
+    const rides = await connection.query(
+      "select * from cccat14.ride where driver_id = $1",
+      [driverId]
+    );
+    await connection.$pool.end();
+    return rides;
+  }
 }
