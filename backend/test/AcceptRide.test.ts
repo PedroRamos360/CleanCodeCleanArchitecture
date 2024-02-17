@@ -1,9 +1,11 @@
 import { AcceptRide } from "../src/application/usecase/AcceptRide";
-import { AccountDAODatabase } from "../src/infra/repository/AccountRepositoryDatabase";
+import { AccountRepositoryDatabase } from "../src/infra/repository/AccountRepositoryDatabase";
 import GetRide from "../src/application/usecase/GetRide";
 import { RequestRide } from "../src/application/usecase/RequestRide";
-import RideDAODatabase from "../src/infra/repository/RideRepositoryDatabase";
+import { RideRepositoryDatabase } from "../src/infra/repository/RideRepositoryDatabase";
 import { Signup } from "../src/application/usecase/Signup";
+import { PgPromiseAdapter } from "../src/infra/database/PgPromiseAdapter";
+import { DatabaseConnection } from "../src/infra/database/DatabaseConnection";
 
 let signup: Signup;
 let requestRide: RequestRide;
@@ -14,13 +16,16 @@ let passengerOutput: { accountId: string };
 let driverOutput: { accountId: string };
 let outputRequestRide: { rideId: string };
 
+let connection: DatabaseConnection;
+
 beforeEach(async () => {
-  const accountDAO = new AccountDAODatabase();
-  const rideDAO = new RideDAODatabase();
-  signup = new Signup(accountDAO);
-  requestRide = new RequestRide(rideDAO, accountDAO);
-  getRide = new GetRide(rideDAO, accountDAO);
-  acceptRide = new AcceptRide(rideDAO, accountDAO);
+  connection = new PgPromiseAdapter();
+  const accountRepository = new AccountRepositoryDatabase(connection);
+  const rideRepository = new RideRepositoryDatabase(connection);
+  signup = new Signup(accountRepository);
+  requestRide = new RequestRide(rideRepository, accountRepository);
+  getRide = new GetRide(rideRepository, accountRepository);
+  acceptRide = new AcceptRide(rideRepository, accountRepository);
   const passengerSignup = {
     name: "John Doe",
     email: `john.doe${Math.random()}@gmail.com`,
@@ -52,11 +57,16 @@ beforeEach(async () => {
   outputRequestRide = await requestRide.execute(inputRequestRide);
 });
 
+afterEach(async () => {
+  await connection.close();
+});
+
 test("Deve aceitar uma corrida", async function () {
   await acceptRide.execute(outputRequestRide.rideId, driverOutput.accountId);
   const ride = await getRide.byId(outputRequestRide.rideId);
-  expect(ride.status).toBe("accepted");
-  expect(ride.driver?.account_id).toBe(driverOutput.accountId);
+  expect(ride).toBeDefined();
+  expect(ride?.status).toBe("accepted");
+  expect(ride?.driver?.accountId).toBe(driverOutput.accountId);
 });
 
 test("Deve lançar um erro porque a corrida já foi aceita", async function () {

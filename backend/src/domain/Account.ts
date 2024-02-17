@@ -1,13 +1,14 @@
 import { CpfValidator } from "./CpfValidator";
+import crypto from "crypto";
 
 interface AccountProps {
   accountId: string;
   name: string;
   email: string;
   cpf: string;
-  carPlate: string;
+  carPlate?: string;
   isPassenger: boolean;
-  isDriver: boolean;
+  isDriver?: boolean;
 }
 
 export class Account {
@@ -15,9 +16,9 @@ export class Account {
   name: string;
   email: string;
   cpf: string;
-  carPlate: string;
+  carPlate?: string;
   isPassenger: boolean;
-  isDriver: boolean;
+  isDriver?: boolean;
 
   private constructor(input: AccountProps) {
     if (this.isInvalidName(input.name)) throw new Error("Invalid name");

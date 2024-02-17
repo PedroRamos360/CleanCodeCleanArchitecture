@@ -18,7 +18,6 @@ create table cccat14.ride (
 	driver_id uuid,
 	status text,
 	fare numeric,
-	distance numeric,
 	from_lat numeric,
 	from_long numeric,
 	to_lat numeric,

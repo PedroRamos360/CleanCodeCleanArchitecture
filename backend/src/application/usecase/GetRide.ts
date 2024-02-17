@@ -1,6 +1,7 @@
+import { Account } from "../../domain/Account";
+import { Ride } from "../../domain/Ride";
 import { AccountRepository } from "../repository/AccountRepository";
 import { RideRepository } from "../repository/RideRepository";
-import { Account, Ride } from "../../infra/database/DatabaseConnection";
 
 export interface GetRideOutput
   extends Omit<Ride, "passenger_id" | "driver_id"> {
@@ -10,15 +11,18 @@ export interface GetRideOutput
 
 export default class GetRide {
   constructor(
-    private rideDao: RideRepository,
-    private accountDao: AccountRepository
+    private rideRepository: RideRepository,
+    private accountRepository: AccountRepository
   ) {}
 
   async byId(rideId: string) {
-    const ride = await this.rideDao.getById(rideId);
-    const passengerDetails = await this.accountDao.getById(ride.passenger_id);
-    const driverDetails = ride.driver_id
-      ? await this.accountDao.getById(ride.driver_id)
+    const ride = await this.rideRepository.getById(rideId);
+    if (!ride) return undefined;
+    const passengerDetails = await this.accountRepository.getById(
+      ride.passengerId
+    );
+    const driverDetails = ride.getDriverId()
+      ? await this.accountRepository.getById(ride.getDriverId())
       : null;
 
     return {
@@ -27,6 +31,7 @@ export default class GetRide {
       driver: driverDetails,
       passenger_id: undefined,
       driver_id: undefined,
+      status: ride.getStatus(),
     };
   }
 }

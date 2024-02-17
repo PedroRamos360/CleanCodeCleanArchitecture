@@ -1,11 +1,6 @@
 import crypto from "crypto";
-import {
-  Account,
-  getConnection,
-} from "../../infra/database/DatabaseConnection";
-import { CpfValidator } from "../../domain/CpfValidator";
 import { AccountRepository } from "../repository/AccountRepository";
-import { AccountDAODatabase } from "../../infra/repository/AccountRepositoryDatabase";
+import { Account } from "../../domain/Account";
 
 interface SignupInput {
   name: string;
@@ -17,15 +12,14 @@ interface SignupInput {
 }
 
 export class Signup {
-  constructor(private readonly accountDao: AccountRepository) {}
+  constructor(private readonly accountRepository: AccountRepository) {}
 
   async execute(input: SignupInput) {
-    const accountId = crypto.randomUUID();
-
-    const account = await this.accountDao.getByEmail(input.email);
-    if (account) throw new Error("Duplicated account");
-    await this.accountDao.save({
-      accountId,
+    const existingAccount = await this.accountRepository.getByEmail(
+      input.email
+    );
+    if (existingAccount) throw new Error("Duplicated account");
+    const account = Account.create({
       name: input.name,
       email: input.email,
       cpf: input.cpf,
@@ -33,8 +27,9 @@ export class Signup {
       isPassenger: input.isPassenger,
       isDriver: input.isDriver,
     });
+    await this.accountRepository.save(account);
     return {
-      accountId,
+      accountId: account.accountId,
     };
   }
 }

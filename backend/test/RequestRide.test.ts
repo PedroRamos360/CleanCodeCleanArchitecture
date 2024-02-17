@@ -1,19 +1,26 @@
-import { AccountDAODatabase } from "../src/infra/repository/AccountRepositoryDatabase";
+import { AccountRepositoryDatabase } from "../src/infra/repository/AccountRepositoryDatabase";
 import GetRide from "../src/application/usecase/GetRide";
 import { RequestRide } from "../src/application/usecase/RequestRide";
-import RideDAODatabase from "../src/infra/repository/RideRepositoryDatabase";
+import { RideRepositoryDatabase } from "../src/infra/repository/RideRepositoryDatabase";
 import { Signup } from "../src/application/usecase/Signup";
+import { PgPromiseAdapter } from "../src/infra/database/PgPromiseAdapter";
 
 let signup: Signup;
 let requestRide: RequestRide;
 let getRide: GetRide;
+let connection: PgPromiseAdapter;
 
 beforeEach(() => {
-  const accountDAO = new AccountDAODatabase();
-  const rideDAO = new RideDAODatabase();
+  connection = new PgPromiseAdapter();
+  const accountDAO = new AccountRepositoryDatabase(connection);
+  const rideDAO = new RideRepositoryDatabase(connection);
   signup = new Signup(accountDAO);
   requestRide = new RequestRide(rideDAO, accountDAO);
   getRide = new GetRide(rideDAO, accountDAO);
+});
+
+afterEach(async () => {
+  await connection.close();
 });
 
 test("Deve solicitar uma corrida", async function () {
@@ -39,5 +46,5 @@ test("Deve solicitar uma corrida", async function () {
   const outputRequestRide = await requestRide.execute(inputRequestRide);
   expect(outputRequestRide.rideId).toBeDefined();
   const outputGetRide = await getRide.byId(outputRequestRide.rideId);
-  expect(outputGetRide.status).toBe("requested");
+  expect(outputGetRide?.status).toBe("requested");
 });

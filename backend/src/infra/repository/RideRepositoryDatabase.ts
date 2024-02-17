@@ -2,7 +2,40 @@ import { RideRepository } from "../../application/repository/RideRepository";
 import { Ride } from "../../domain/Ride";
 import { DatabaseConnection } from "../database/DatabaseConnection";
 
-export class RideDAODatabase implements RideRepository {
+interface RideDb {
+  ride_id: string;
+  passenger_id: string;
+  driver_id: string;
+  from_lat: number;
+  from_long: number;
+  to_lat: number;
+  to_long: number;
+  status: string;
+  date: Date;
+}
+
+function fromRideDbToRide(ride: RideDb): Ride {
+  return new Ride(
+    ride.ride_id,
+    ride.passenger_id,
+    ride.driver_id,
+    ride.status,
+    ride.date,
+    ride.from_lat,
+    ride.from_long,
+    ride.to_lat,
+    ride.to_long
+  );
+}
+
+function fromRidesDbToRides(rides: RideDb[]): Ride[] {
+  const rideInstances = rides.map((ride) => {
+    return fromRideDbToRide(ride);
+  });
+  return rideInstances;
+}
+
+export class RideRepositoryDatabase implements RideRepository {
   constructor(private connection: DatabaseConnection) {}
 
   async save(ride: Ride) {
@@ -20,7 +53,6 @@ export class RideDAODatabase implements RideRepository {
         ride.getDistance(),
       ]
     );
-    await this.connection.close();
   }
 
   async getById(rideId: string) {
@@ -28,8 +60,9 @@ export class RideDAODatabase implements RideRepository {
       "select * from cccat14.ride where ride_id = $1",
       [rideId]
     );
-    await this.connection.close();
-    return ride;
+    if (!ride) return undefined;
+
+    return fromRideDbToRide(ride);
   }
 
   async getByPassengerId(passengerId: string): Promise<Ride[]> {
@@ -37,8 +70,8 @@ export class RideDAODatabase implements RideRepository {
       "select * from cccat14.ride where passenger_id = $1",
       [passengerId]
     );
-    await this.connection.close();
-    return rides;
+
+    return fromRidesDbToRides(rides);
   }
 
   async update(ride: Ride) {
@@ -57,7 +90,6 @@ export class RideDAODatabase implements RideRepository {
         ride.getDriverId(),
       ]
     );
-    await this.connection.close();
   }
 
   async getRidesByDriverId(driverId: string): Promise<Ride[]> {
@@ -65,7 +97,7 @@ export class RideDAODatabase implements RideRepository {
       "select * from cccat14.ride where driver_id = $1",
       [driverId]
     );
-    await this.connection.close();
-    return rides;
+
+    return fromRidesDbToRides(rides);
   }
 }

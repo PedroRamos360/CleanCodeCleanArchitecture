@@ -1,24 +1,27 @@
 import { AcceptRide } from "../src/application/usecase/AcceptRide";
-import { AccountDAODatabase } from "../src/infra/repository/AccountRepositoryDatabase";
+import { AccountRepositoryDatabase } from "../src/infra/repository/AccountRepositoryDatabase";
 import GetRide from "../src/application/usecase/GetRide";
 import { RequestRide } from "../src/application/usecase/RequestRide";
-import RideDAODatabase from "../src/infra/repository/RideRepositoryDatabase";
+import { RideRepositoryDatabase } from "../src/infra/repository/RideRepositoryDatabase";
 import { Signup } from "../src/application/usecase/Signup";
 import { StartRide } from "../src/application/usecase/StartRide";
+import { PgPromiseAdapter } from "../src/infra/database/PgPromiseAdapter";
 
 let signup: Signup;
 let requestRide: RequestRide;
 let getRide: GetRide;
 let acceptRide: AcceptRide;
 let startRide: StartRide;
+let connection: PgPromiseAdapter;
 
 let passengerOutput: { accountId: string };
 let driverOutput: { accountId: string };
 let outputRequestRide: { rideId: string };
 
 beforeEach(async () => {
-  const accountDAO = new AccountDAODatabase();
-  const rideDAO = new RideDAODatabase();
+  connection = new PgPromiseAdapter();
+  const accountDAO = new AccountRepositoryDatabase(connection);
+  const rideDAO = new RideRepositoryDatabase(connection);
   signup = new Signup(accountDAO);
   requestRide = new RequestRide(rideDAO, accountDAO);
   getRide = new GetRide(rideDAO, accountDAO);
@@ -56,11 +59,15 @@ beforeEach(async () => {
   outputRequestRide = await requestRide.execute(inputRequestRide);
 });
 
+afterEach(async () => {
+  await connection.close();
+});
+
 test("Deve começar a corrida", async function () {
   await acceptRide.execute(outputRequestRide.rideId, driverOutput.accountId);
   await startRide.execute(outputRequestRide.rideId);
   const ride = await getRide.byId(outputRequestRide.rideId);
-  expect(ride.status).toBe("in_progress");
+  expect(ride?.status).toBe("in_progress");
 });
 
 test("Deve falhar ao começar uma corrida que não foi aceita", async function () {

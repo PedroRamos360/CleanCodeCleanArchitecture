@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import { Ride } from "../../domain/Ride";
 import { AccountRepository } from "../repository/AccountRepository";
 import { RideRepository } from "../repository/RideRepository";
 
@@ -16,38 +16,31 @@ export interface RequestRideInput {
 
 export class RequestRide {
   constructor(
-    private rideDao: RideRepository,
-    private accountDao: AccountRepository
+    private rideRepository: RideRepository,
+    private accountRepository: AccountRepository
   ) {}
 
   async execute(input: RequestRideInput) {
-    const account = await this.accountDao.getById(input.passengerId);
+    const account = await this.accountRepository.getById(input.passengerId);
     if (!account) throw new Error("Account not found");
-    if (!account.is_passenger) throw new Error("Account is not a passenger");
-    const passengerRides = await this.rideDao.getByPassengerId(
+    if (!account.isPassenger) throw new Error("Account is not a passenger");
+    const passengerRides = await this.rideRepository.getByPassengerId(
       input.passengerId
     );
     const ongoingRide = passengerRides.find(
-      (ride) => ride.status !== "completed"
+      (ride) => ride.getStatus() !== "completed"
     );
     if (ongoingRide) throw new Error("Account has an ongoing ride");
-    const rideId = crypto.randomUUID();
-    const status = "requested";
-    const date = new Date();
-    const distance = this.calculateDistance(input.from, input.to);
-    await this.rideDao.save({
-      rideId,
+    const ride = Ride.create({
       passengerId: input.passengerId,
       fromLat: input.from.lat,
       fromLong: input.from.lng,
       toLat: input.to.lat,
       toLong: input.to.lng,
-      status,
-      date,
-      distance,
     });
+    await this.rideRepository.save(ride);
     return {
-      rideId,
+      rideId: ride.rideId,
     };
   }
 

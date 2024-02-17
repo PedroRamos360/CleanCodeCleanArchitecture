@@ -22,5 +22,6 @@ export class ExpressAdapter implements HttpServer {
 
   listen(port: number) {
     this.app.listen(port);
+    console.log(`Server is running at localhost:${port}`);
   }
 }

@@ -1,3 +1,5 @@
+import crypto from "crypto";
+
 interface CreateRide {
   passengerId: string;
   fromLat: number;
@@ -7,7 +9,7 @@ interface CreateRide {
 }
 
 export class Ride {
-  private constructor(
+  constructor(
     readonly rideId: string,
     readonly passengerId: string,
     private driverId: string,
@@ -42,7 +44,7 @@ export class Ride {
   }
 
   start() {
-    this.status = "started";
+    this.status = "in_progress";
   }
 
   getDistance() {
