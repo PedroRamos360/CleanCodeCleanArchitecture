@@ -40,7 +40,7 @@ export class RideRepositoryDatabase implements RideRepository {
 
   async save(ride: Ride) {
     await this.connection.query(
-      "insert into cccat14.ride (ride_id, passenger_id, from_lat, from_long, to_lat, to_long, status, date, distance) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+      "insert into cccat14.ride (ride_id, passenger_id, from_lat, from_long, to_lat, to_long, status, date) values ($1, $2, $3, $4, $5, $6, $7, $8)",
       [
         ride.rideId,
         ride.passengerId,
@@ -50,7 +50,6 @@ export class RideRepositoryDatabase implements RideRepository {
         ride.toLong,
         ride.getStatus(),
         ride.date,
-        ride.getDistance(),
       ]
     );
   }
@@ -76,7 +75,7 @@ export class RideRepositoryDatabase implements RideRepository {
 
   async update(ride: Ride) {
     await this.connection.query(
-      "update cccat14.ride set passenger_id = $2, from_lat = $3, from_long = $4, to_lat = $5, to_long = $6, status = $7, date = $8, distance = $9, driver_id = $10 where ride_id = $1",
+      "update cccat14.ride set passenger_id = $2, from_lat = $3, from_long = $4, to_lat = $5, to_long = $6, status = $7, date = $8, driver_id = $9 where ride_id = $1",
       [
         ride.rideId,
         ride.passengerId,
@@ -86,7 +85,6 @@ export class RideRepositoryDatabase implements RideRepository {
         ride.toLong,
         ride.getStatus(),
         ride.date,
-        ride.getDistance(),
         ride.getDriverId(),
       ]
     );

@@ -66,7 +66,7 @@ afterEach(async () => {
 test("Deve começar a corrida", async function () {
   await acceptRide.execute(outputRequestRide.rideId, driverOutput.accountId);
   await startRide.execute(outputRequestRide.rideId);
-  const ride = await getRide.byId(outputRequestRide.rideId);
+  const ride = await getRide.execute(outputRequestRide.rideId);
   expect(ride?.status).toBe("in_progress");
 });
 

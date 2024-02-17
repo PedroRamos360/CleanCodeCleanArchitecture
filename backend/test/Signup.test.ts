@@ -28,7 +28,7 @@ test("Deve criar uma conta para o passageiro", async function () {
   };
   const outputSignup = await signup.execute(inputSignup);
   expect(outputSignup.accountId).toBeDefined();
-  const outputGetAccount = await getAccount.byId(outputSignup.accountId);
+  const outputGetAccount = await getAccount.execute(outputSignup.accountId);
   // then
   expect(outputGetAccount?.name).toBe(inputSignup.name);
   expect(outputGetAccount?.email).toBe(inputSignup.email);
@@ -61,7 +61,7 @@ test("Deve criar uma conta para o passageiro com stub", async function () {
         isDriver: false,
       })
     );
-  const outputGetAccount = await getAccount.byId(outputSignup.accountId);
+  const outputGetAccount = await getAccount.execute(outputSignup.accountId);
   // then
   expect(outputGetAccount?.name).toBe(inputSignup.name);
   expect(outputGetAccount?.email).toBe(inputSignup.email);
@@ -80,7 +80,7 @@ test("Deve criar uma conta para o passageiro com mock", async function () {
   };
   const outputSignup = await signup.execute(inputSignup);
   expect(outputSignup.accountId).toBeDefined();
-  const outputGetAccount = await getAccount.byId(outputSignup.accountId);
+  const outputGetAccount = await getAccount.execute(outputSignup.accountId);
   // then
   expect(outputGetAccount?.name).toBe(inputSignup.name);
   expect(outputGetAccount?.email).toBe(inputSignup.email);
@@ -160,7 +160,7 @@ test("Deve criar uma conta para o motorista", async function () {
   };
   // when
   const outputSignup = await signup.execute(inputSignup);
-  const outputGetAccount = await getAccount.byId(outputSignup.accountId);
+  const outputGetAccount = await getAccount.execute(outputSignup.accountId);
   // then
   expect(outputSignup.accountId).toBeDefined();
   expect(outputGetAccount?.name).toBe(inputSignup.name);
@@ -208,7 +208,7 @@ test("Deve criar uma conta para o passageiro com fake", async function () {
   const getAccount = new GetAccount(accountDAO);
   const outputSignup = await signup.execute(inputSignup);
   expect(outputSignup.accountId).toBeDefined();
-  const outputGetAccount = await getAccount.byId(outputSignup.accountId);
+  const outputGetAccount = await getAccount.execute(outputSignup.accountId);
   // then
   expect(outputGetAccount?.name).toBe(inputSignup.name);
   expect(outputGetAccount?.email).toBe(inputSignup.email);

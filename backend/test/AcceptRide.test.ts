@@ -6,6 +6,7 @@ import { RideRepositoryDatabase } from "../src/infra/repository/RideRepositoryDa
 import { Signup } from "../src/application/usecase/Signup";
 import { PgPromiseAdapter } from "../src/infra/database/PgPromiseAdapter";
 import { DatabaseConnection } from "../src/infra/database/DatabaseConnection";
+import { createRideAndRequestIt } from "./createRideAndRequestIt";
 
 let signup: Signup;
 let requestRide: RequestRide;
@@ -26,35 +27,7 @@ beforeEach(async () => {
   requestRide = new RequestRide(rideRepository, accountRepository);
   getRide = new GetRide(rideRepository, accountRepository);
   acceptRide = new AcceptRide(rideRepository, accountRepository);
-  const passengerSignup = {
-    name: "John Doe",
-    email: `john.doe${Math.random()}@gmail.com`,
-    cpf: "97456321558",
-    isPassenger: true,
-    password: "123456",
-  };
-  const driverSignup = {
-    name: "John Doe",
-    email: `john.doe${Math.random()}@gmail.com`,
-    cpf: "97456321558",
-    carPlate: "AAA9999",
-    isPassenger: false,
-    isDriver: true,
-  };
-  passengerOutput = await signup.execute(passengerSignup);
-  driverOutput = await signup.execute(driverSignup);
-  const inputRequestRide = {
-    passengerId: passengerOutput.accountId,
-    from: {
-      lat: -27.584905257808835,
-      lng: -48.545022195325124,
-    },
-    to: {
-      lat: -27.496887588317275,
-      lng: -48.522234807851476,
-    },
-  };
-  outputRequestRide = await requestRide.execute(inputRequestRide);
+  await createRideAndRequestIt(connection);
 });
 
 afterEach(async () => {
@@ -63,7 +36,7 @@ afterEach(async () => {
 
 test("Deve aceitar uma corrida", async function () {
   await acceptRide.execute(outputRequestRide.rideId, driverOutput.accountId);
-  const ride = await getRide.byId(outputRequestRide.rideId);
+  const ride = await getRide.execute(outputRequestRide.rideId);
   expect(ride).toBeDefined();
   expect(ride?.status).toBe("accepted");
   expect(ride?.driver?.accountId).toBe(driverOutput.accountId);

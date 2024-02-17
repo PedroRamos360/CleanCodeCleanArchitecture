@@ -45,6 +45,6 @@ test("Deve solicitar uma corrida", async function () {
   };
   const outputRequestRide = await requestRide.execute(inputRequestRide);
   expect(outputRequestRide.rideId).toBeDefined();
-  const outputGetRide = await getRide.byId(outputRequestRide.rideId);
+  const outputGetRide = await getRide.execute(outputRequestRide.rideId);
   expect(outputGetRide?.status).toBe("requested");
 });

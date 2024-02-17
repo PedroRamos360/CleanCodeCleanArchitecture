@@ -27,7 +27,7 @@ export class MainController {
       "get",
       "/accounts/:accountId",
       async function (params: any, body: any) {
-        const output = await getAccount.byId(params.accountId);
+        const output = await getAccount.execute(params.accountId);
         return output;
       }
     );
@@ -43,7 +43,7 @@ export class MainController {
       "get",
       "/rides/:rideId",
       async function (params: any, body: any) {
-        const output = await getRide.byId(params.rideId);
+        const output = await getRide.execute(params.rideId);
         return output;
       }
     );

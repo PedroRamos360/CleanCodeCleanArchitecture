@@ -15,7 +15,7 @@ export default class GetRide {
     private accountRepository: AccountRepository
   ) {}
 
-  async byId(rideId: string) {
+  async execute(rideId: string) {
     const ride = await this.rideRepository.getById(rideId);
     if (!ride) return undefined;
     const passengerDetails = await this.accountRepository.getById(

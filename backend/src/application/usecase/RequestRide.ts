@@ -44,7 +44,7 @@ export class RequestRide {
     };
   }
 
-  private calculateDistance(
+  calculateDistance(
     from: RequestRideInput["from"],
     to: RequestRideInput["to"]
   ): number {
