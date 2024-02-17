@@ -1,7 +1,7 @@
-import RideDAO from "./RideDAO";
+import { RideRepository } from "../repository/RideRepository";
 
 export class StartRide {
-  constructor(private rideDao: RideDAO) {}
+  constructor(private rideDao: RideRepository) {}
 
   async execute(ride_id: string) {
     const ride = await this.rideDao.getById(ride_id);

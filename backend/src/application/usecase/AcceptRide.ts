@@ -1,8 +1,11 @@
-import AccountDAO from "./AccountDAO";
-import RideDAO from "./RideDAO";
+import { AccountRepository } from "../repository/AccountRepository";
+import { RideRepository } from "../repository/RideRepository";
 
 export class AcceptRide {
-  constructor(private rideDao: RideDAO, private accountDao: AccountDAO) {}
+  constructor(
+    private rideDao: RideRepository,
+    private accountDao: AccountRepository
+  ) {}
 
   async execute(ride_id: string, driver_id: string) {
     const account = await this.accountDao.getById(driver_id);

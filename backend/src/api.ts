@@ -1,88 +1,25 @@
-import assert from "assert";
-import express, { Response } from "express";
-import morgan from "morgan";
-import { AccountDAODatabase } from "./AccountDAODatabase";
-import { Signup } from "./Signup";
-import RideDAODatabase from "./RideDAODatabase";
-import { AcceptRide } from "./AcceptRide";
-import { StartRide } from "./StartRide";
+import { GetAccount } from "./application/usecase/GetAccount";
+import { Signup } from "./application/usecase/Signup";
+import { MainController } from "./infra/controller/MainController";
+import { PgPromiseAdapter } from "./infra/database/PgPromiseAdapter";
+import { ExpressAdapter } from "./infra/http/ExpressAdapter";
+import AccountRepositoryDatabase from "./infra/repository/AccountRepositoryDatabase";
 
-function routeTreatment(
-  res: Response,
-  functionToCall: CallableFunction,
-  input: unknown,
-  errorCode: number = 400
-) {
-  void functionToCall(input)
-    .then((data: unknown) => {
-      res.status(200).send(data);
-    })
-    .catch((error: Error) => {
-      res.status(errorCode).send({ error: error.message });
-      throw error;
-    });
-}
+// composition root ou entry point
+// criar o grafo de dependências utilizado no projeto
 
-const PORT = 3000;
-const app = express();
-app.use(express.json());
-app.use(morgan("dev"));
-app.listen(PORT);
-console.log(`Server started at localhost:${PORT}`);
-app.get("/", (req, res) => res.send("Hello World!"));
-app.post("/signup", (req, res) => {
-  assert(req.body);
-  const accountDao = new AccountDAODatabase();
-  const signup = new Signup(accountDao);
+// framework and driver and library
+const httpServer = new ExpressAdapter();
+const databaseConnection = new PgPromiseAdapter();
 
-  void routeTreatment(
-    res,
-    (input: any) => signup.execute(input),
-    req.body,
-    422
-  );
-});
-app.get("/account/:accountId", (req, res) => {
-  assert(req.params);
-  const accountDao = new AccountDAODatabase();
-  void routeTreatment(
-    res,
-    (input: any) => accountDao.getById(input),
-    req.params.accountId
-  );
-});
-app.post("/request-ride", (req, res) => {
-  assert(req.body);
-  const rideDao = new RideDAODatabase();
-  void routeTreatment(res, (input: any) => rideDao.save(input), req.body);
-});
-app.get("/ride/:rideId", (req, res) => {
-  assert(req.params);
-  const rideDao = new RideDAODatabase();
-  void routeTreatment(
-    res,
-    (input: any) => rideDao.getById(input),
-    req.params.rideId
-  );
-});
-app.post("/accept-ride", (req, res) => {
-  assert(req.body);
-  const rideDao = new RideDAODatabase();
-  const accountDao = new AccountDAODatabase();
-  const acceptRide = new AcceptRide(rideDao, accountDao);
-  void routeTreatment(
-    res,
-    (input: any) => acceptRide.execute(input.rideId, input.driverId),
-    req.body
-  );
-});
-app.post("/start-ride", (req, res) => {
-  assert(req.body);
-  const rideDao = new RideDAODatabase();
-  const startRide = new StartRide(rideDao);
-  void routeTreatment(
-    res,
-    (input: any) => startRide.execute(input.rideId),
-    req.body
-  );
-});
+// interface adapter
+const accountRepository = new AccountRepositoryDatabase(databaseConnection);
+const logger = new LoggerConsole();
+
+// use case
+const signup = new Signup(accountRepository, logger);
+const getAccount = new GetAccount(accountRepository);
+
+// interface adapter
+new MainController(httpServer, signup, getAccount);
+httpServer.listen(3000);

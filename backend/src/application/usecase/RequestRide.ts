@@ -1,6 +1,6 @@
 import crypto from "crypto";
-import AccountDAO from "./AccountDAO";
-import RideDAO from "./RideDAO";
+import { AccountRepository } from "../repository/AccountRepository";
+import { RideRepository } from "../repository/RideRepository";
 
 export interface RequestRideInput {
   passengerId: string;
@@ -15,7 +15,10 @@ export interface RequestRideInput {
 }
 
 export class RequestRide {
-  constructor(private rideDao: RideDAO, private accountDao: AccountDAO) {}
+  constructor(
+    private rideDao: RideRepository,
+    private accountDao: AccountRepository
+  ) {}
 
   async execute(input: RequestRideInput) {
     const account = await this.accountDao.getById(input.passengerId);

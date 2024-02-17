@@ -1,6 +1,6 @@
-import AccountDAO from "../src/AccountDAO";
-import { AccountDAODatabase } from "../src/AccountDAODatabase";
-import { Signup } from "../src/Signup";
+import AccountDAO from "../src/application/repository/AccountRepository";
+import { AccountDAODatabase } from "../src/infra/repository/AccountRepositoryDatabase";
+import { Signup } from "../src/application/usecase/Signup";
 import sinon from "sinon";
 
 let signup: Signup;

@@ -1,6 +1,6 @@
-import AccountDAO from "./AccountDAO";
-import RideDAO from "./RideDAO";
-import { Account, Ride } from "./database";
+import { AccountRepository } from "../repository/AccountRepository";
+import { RideRepository } from "../repository/RideRepository";
+import { Account, Ride } from "../../infra/database/DatabaseConnection";
 
 export interface GetRideOutput
   extends Omit<Ride, "passenger_id" | "driver_id"> {
@@ -9,7 +9,10 @@ export interface GetRideOutput
 }
 
 export default class GetRide {
-  constructor(private rideDao: RideDAO, private accountDao: AccountDAO) {}
+  constructor(
+    private rideDao: RideRepository,
+    private accountDao: AccountRepository
+  ) {}
 
   async byId(rideId: string) {
     const ride = await this.rideDao.getById(rideId);

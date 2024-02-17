@@ -1,10 +1,10 @@
-import { AcceptRide } from "../src/AcceptRide";
-import { AccountDAODatabase } from "../src/AccountDAODatabase";
-import GetRide from "../src/GetRide";
-import { RequestRide } from "../src/RequestRide";
-import RideDAODatabase from "../src/RideDAODatabase";
-import { Signup } from "../src/Signup";
-import { StartRide } from "../src/StartRide";
+import { AcceptRide } from "../src/application/usecase/AcceptRide";
+import { AccountDAODatabase } from "../src/infra/repository/AccountRepositoryDatabase";
+import GetRide from "../src/application/usecase/GetRide";
+import { RequestRide } from "../src/application/usecase/RequestRide";
+import RideDAODatabase from "../src/infra/repository/RideRepositoryDatabase";
+import { Signup } from "../src/application/usecase/Signup";
+import { StartRide } from "../src/application/usecase/StartRide";
 
 let signup: Signup;
 let requestRide: RequestRide;
