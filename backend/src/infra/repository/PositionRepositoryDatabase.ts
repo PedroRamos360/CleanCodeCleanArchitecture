@@ -21,4 +21,21 @@ export class PositionRepositoryDatabase implements PositionRepository {
       positionId: position.positionId,
     };
   }
+
+  async listPositionsByRideId(rideId: string) {
+    const positions = await this.connection.query(
+      "select * from cccat14.position where ride_id = $1",
+      [rideId]
+    );
+
+    return positions.map((position: any) => {
+      return Position.restore(
+        position.position_id,
+        position.ride_id,
+        position.lat,
+        position.long,
+        position.date
+      );
+    });
+  }
 }

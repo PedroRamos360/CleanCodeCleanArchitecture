@@ -2,6 +2,7 @@ import { AccountRepository } from "../src/application/repository/AccountReposito
 import { PositionRepository } from "../src/application/repository/PositionRepository";
 import { RideRepository } from "../src/application/repository/RideRepository";
 import { AcceptRide } from "../src/application/usecase/AcceptRide";
+import { FinishRide } from "../src/application/usecase/FinishRide";
 import { StartRide } from "../src/application/usecase/StartRide";
 import { UpdatePosition } from "../src/application/usecase/UpdatePosition";
 import { DatabaseConnection } from "../src/infra/database/DatabaseConnection";
@@ -17,6 +18,7 @@ let accountRepository: AccountRepository;
 let rideRepository: RideRepository;
 let acceptRide: AcceptRide;
 let updatePosition: UpdatePosition;
+let finishRide: FinishRide;
 
 let driverId: string;
 let rideId: string;
@@ -28,6 +30,7 @@ beforeEach(async () => {
   rideRepository = new RideRepositoryDatabase(connection);
   acceptRide = new AcceptRide(rideRepository, accountRepository);
   updatePosition = new UpdatePosition(positionRepository, rideRepository);
+  finishRide = new FinishRide(rideRepository, positionRepository);
 
   const { outputRequestRide, driverOutput } = await createRideAndRequestIt(
     connection
@@ -42,7 +45,7 @@ afterEach(async () => {
 });
 
 test("Deve verificar se a corrida está em status 'in_progress', se não estiver lançar um erro", async () => {
-  await expect(updatePosition.execute(rideId, 0, 0)).rejects.toThrow(
+  await expect(finishRide.execute(rideId)).rejects.toThrow(
     "Ride is not in progress"
   );
 });
@@ -50,6 +53,11 @@ test("Deve verificar se a corrida está em status 'in_progress', se não estiver
 test("Atualizar a corrida com o status 'completed', a distância e o valor da corrida (fare)", async () => {
   const startRide = new StartRide(rideRepository);
   await startRide.execute(rideId);
-  const outputUpdatePosition = await updatePosition.execute(rideId, 0, 0);
-  expect(outputUpdatePosition.positionId).toBeDefined();
+  await updatePosition.execute(rideId, -29.7012128, -53.7218208);
+  await updatePosition.execute(rideId, -29.701119, -53.7199577);
+  await updatePosition.execute(rideId, -29.7017541, -53.7179348);
+  const outputFinishRide = await finishRide.execute(rideId);
+  expect(outputFinishRide.getStatus()).toBe("completed");
+  expect(outputFinishRide.distance).toBeGreaterThan(0);
+  expect(outputFinishRide.fare).toBeGreaterThan(0);
 });

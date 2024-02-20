@@ -29,12 +29,12 @@ export async function createRideAndRequestIt(connection: DatabaseConnection) {
   const inputRequestRide = {
     passengerId: passengerOutput.accountId,
     from: {
-      lat: -27.584905257808835,
-      lng: -48.545022195325124,
+      lat: -29.7012128,
+      lng: -53.7218208,
     },
     to: {
-      lat: -27.496887588317275,
-      lng: -48.522234807851476,
+      lat: -29.7017541,
+      lng: -53.7179348,
     },
   };
   const outputRequestRide = await requestRide.execute(inputRequestRide);

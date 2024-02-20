@@ -1,4 +1,6 @@
 import crypto from "crypto";
+import { PositionRepositoryDatabase } from "../infra/repository/PositionRepositoryDatabase";
+import { PgPromiseAdapter } from "../infra/database/PgPromiseAdapter";
 
 interface CreateRide {
   passengerId: string;
@@ -9,6 +11,9 @@ interface CreateRide {
 }
 
 export class Ride {
+  distance: number | null = null;
+  fare: number | null = null;
+
   constructor(
     readonly rideId: string,
     readonly passengerId: string,
@@ -47,18 +52,8 @@ export class Ride {
     this.status = "in_progress";
   }
 
-  getDistance() {
-    const R = 6371;
-    const φ1 = (this.fromLat * Math.PI) / 180;
-    const φ2 = (this.toLat * Math.PI) / 180;
-    const Δφ = ((this.toLat - this.fromLat) * Math.PI) / 180;
-    const Δλ = ((this.toLong - this.fromLong) * Math.PI) / 180;
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c;
-    return distance;
+  finish() {
+    this.status = "completed";
   }
 
   getDriverId() {

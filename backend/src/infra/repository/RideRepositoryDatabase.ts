@@ -75,7 +75,7 @@ export class RideRepositoryDatabase implements RideRepository {
 
   async update(ride: Ride) {
     await this.connection.query(
-      "update cccat14.ride set passenger_id = $2, from_lat = $3, from_long = $4, to_lat = $5, to_long = $6, status = $7, date = $8, driver_id = $9 where ride_id = $1",
+      "update cccat14.ride set passenger_id = $2, from_lat = $3, from_long = $4, to_lat = $5, to_long = $6, status = $7, date = $8, driver_id = $9, distance = $10, fare = $11 where ride_id = $1",
       [
         ride.rideId,
         ride.passengerId,
@@ -86,6 +86,8 @@ export class RideRepositoryDatabase implements RideRepository {
         ride.getStatus(),
         ride.date,
         ride.getDriverId(),
+        ride.distance,
+        ride.fare,
       ]
     );
   }
