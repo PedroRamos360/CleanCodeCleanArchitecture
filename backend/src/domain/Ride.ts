@@ -1,66 +1,93 @@
 import crypto from "crypto";
-import { PositionRepositoryDatabase } from "../infra/repository/PositionRepositoryDatabase";
-import { PgPromiseAdapter } from "../infra/database/PgPromiseAdapter";
-
-interface CreateRide {
-  passengerId: string;
-  fromLat: number;
-  fromLong: number;
-  toLat: number;
-  toLong: number;
-}
+import { RideStatus, RideStatusFactory } from "./RideStatus";
+import { Position } from "./Position";
+import { Coord } from "./Coord";
+import { FareCalculatorFactory } from "./FareCalculator";
+import { distanceBetweenPoints } from "../math/distanceBetweenPoints";
 
 export class Ride {
-  distance: number | null = null;
-  fare: number | null = null;
+  status: RideStatus;
 
   constructor(
     readonly rideId: string,
     readonly passengerId: string,
     private driverId: string,
-    private status: string,
+    status: string,
     readonly date: Date,
     readonly fromLat: number,
     readonly fromLong: number,
     readonly toLat: number,
-    readonly toLong: number
-  ) {}
+    readonly toLong: number,
+    private fare: number = 0,
+    private distance: number = 0,
+    private lastPosition?: Coord
+  ) {
+    this.status = RideStatusFactory.create(status, this);
+  }
 
-  static create(input: CreateRide) {
+  static create(
+    passengerId: string,
+    fromLat: number,
+    fromLong: number,
+    toLat: number,
+    toLong: number
+  ) {
     const rideId = crypto.randomUUID();
-    const date = new Date();
+    const driverId = "";
     const status = "requested";
+    const date = new Date();
     return new Ride(
       rideId,
-      input.passengerId,
-      "",
+      passengerId,
+      driverId,
       status,
       date,
-      input.fromLat,
-      input.fromLong,
-      input.toLat,
-      input.toLong
+      fromLat,
+      fromLong,
+      toLat,
+      toLong
     );
   }
 
   accept(driverId: string) {
     this.driverId = driverId;
-    this.status = "accepted";
+    this.status.accept();
   }
 
   start() {
-    this.status = "in_progress";
+    this.status.start();
   }
 
   finish() {
-    this.status = "completed";
+    const fareCalculator = FareCalculatorFactory.create(this.date);
+    this.fare = fareCalculator.calculate(this.distance);
+    this.status.finish();
+  }
+
+  updatePosition(position: Position) {
+    if (this.lastPosition) {
+      this.distance += distanceBetweenPoints(this.lastPosition, position.coord);
+    }
+    this.lastPosition = position.coord;
+  }
+
+  getStatus() {
+    return this.status.value;
   }
 
   getDriverId() {
     return this.driverId;
   }
 
-  getStatus() {
-    return this.status;
+  getFare() {
+    return this.fare;
+  }
+
+  getDistance() {
+    return this.distance;
+  }
+
+  getLastPosition() {
+    return this.lastPosition;
   }
 }

@@ -1,9 +1,6 @@
-interface Point {
-  lat: number;
-  long: number;
-}
+import { Coord } from "../domain/Coord";
 
-export function distanceBetweenPoints(A: Point, B: Point) {
+export function distanceBetweenPoints(A: Coord, B: Coord) {
   const R = 6371;
   const φ1 = (A.lat * Math.PI) / 180;
   const φ2 = (B.lat * Math.PI) / 180;

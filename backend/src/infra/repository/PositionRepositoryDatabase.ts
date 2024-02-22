@@ -11,8 +11,8 @@ export class PositionRepositoryDatabase implements PositionRepository {
       [
         position.positionId,
         position.rideId,
-        position.lat,
-        position.long,
+        position.coord.lat,
+        position.coord.long,
         position.date,
       ]
     );
@@ -32,8 +32,7 @@ export class PositionRepositoryDatabase implements PositionRepository {
       return Position.restore(
         position.position_id,
         position.ride_id,
-        position.lat,
-        position.long,
+        { lat: position.lat, long: position.long },
         position.date
       );
     });

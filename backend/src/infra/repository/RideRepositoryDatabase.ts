@@ -86,8 +86,8 @@ export class RideRepositoryDatabase implements RideRepository {
         ride.getStatus(),
         ride.date,
         ride.getDriverId(),
-        ride.distance,
-        ride.fare,
+        ride.getDistance(),
+        ride.getFare(),
       ]
     );
   }

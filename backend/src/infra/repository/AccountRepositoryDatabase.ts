@@ -2,7 +2,6 @@ import { Account } from "../../domain/Account";
 import { AccountRepository } from "../../application/repository/AccountRepository";
 import { DatabaseConnection } from "../database/DatabaseConnection";
 
-// Interface Adapters
 export class AccountRepositoryDatabase implements AccountRepository {
   constructor(readonly connection: DatabaseConnection) {}
 
