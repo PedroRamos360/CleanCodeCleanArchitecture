@@ -15,8 +15,6 @@ export class FinishRide {
     if (ride.getStatus() !== "in_progress")
       throw new Error("Ride is not in progress");
     ride.finish();
-    ride.distance = await this.getDistance(rideId);
-    ride.fare = this.getFare(ride.distance);
     await this.rideRepository.update(ride);
     return ride;
   }
@@ -31,12 +29,12 @@ export class FinishRide {
       const start = ridePositions[i];
       const end = ridePositions[i + 1];
       const pointA = {
-        lat: start.lat,
-        long: start.long,
+        lat: start.coord.lat,
+        long: start.coord.long,
       };
       const pointB = {
-        lat: end.lat,
-        long: end.long,
+        lat: end.coord.lat,
+        long: end.coord.long,
       };
       distance += distanceBetweenPoints(pointA, pointB);
     }

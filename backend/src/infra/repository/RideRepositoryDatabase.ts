@@ -1,4 +1,5 @@
 import { RideRepository } from "../../application/repository/RideRepository";
+import { Coord } from "../../domain/Coord";
 import { Ride } from "../../domain/Ride";
 import { DatabaseConnection } from "../database/DatabaseConnection";
 
@@ -10,6 +11,10 @@ interface RideDb {
   from_long: number;
   to_lat: number;
   to_long: number;
+  last_lat: number;
+  last_long: number;
+  fare: number;
+  distance: number;
   status: string;
   date: Date;
 }
@@ -24,7 +29,10 @@ function fromRideDbToRide(ride: RideDb): Ride {
     ride.from_lat,
     ride.from_long,
     ride.to_lat,
-    ride.to_long
+    ride.to_long,
+    new Coord(ride.last_lat, ride.last_long),
+    ride.fare,
+    ride.distance
   );
 }
 
@@ -75,7 +83,7 @@ export class RideRepositoryDatabase implements RideRepository {
 
   async update(ride: Ride) {
     await this.connection.query(
-      "update cccat14.ride set passenger_id = $2, from_lat = $3, from_long = $4, to_lat = $5, to_long = $6, status = $7, date = $8, driver_id = $9, distance = $10, fare = $11 where ride_id = $1",
+      "update cccat14.ride set passenger_id = $2, from_lat = $3, from_long = $4, to_lat = $5, to_long = $6, status = $7, date = $8, driver_id = $9, distance = $10, fare = $11, last_lat = $12, last_long = $13 where ride_id = $1",
       [
         ride.rideId,
         ride.passengerId,
@@ -88,6 +96,8 @@ export class RideRepositoryDatabase implements RideRepository {
         ride.getDriverId(),
         ride.getDistance(),
         ride.getFare(),
+        ride.getLastPosition()?.lat,
+        ride.getLastPosition()?.long,
       ]
     );
   }

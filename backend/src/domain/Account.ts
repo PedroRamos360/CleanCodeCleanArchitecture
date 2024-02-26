@@ -9,9 +9,9 @@ interface AccountProps {
   name: string;
   email: string;
   cpf: string;
-  carPlate: string;
+  carPlate?: string;
+  isDriver?: boolean;
   isPassenger: boolean;
-  isDriver: boolean;
 }
 
 export class Account {
@@ -19,25 +19,25 @@ export class Account {
   name: Name;
   email: Email;
   cpf: Cpf;
-  carPlate: CarPlate;
   isPassenger: boolean;
-  isDriver: boolean;
+  carPlate?: CarPlate;
+  isDriver?: boolean;
 
   private constructor(
     accountId: string,
     name: Name,
     email: Email,
     cpf: Cpf,
-    carPlate: CarPlate,
     isPassenger: boolean,
-    isDriver: boolean
+    carPlate?: CarPlate,
+    isDriver?: boolean
   ) {
     this.accountId = accountId;
     this.name = name;
     this.email = email;
     this.cpf = cpf;
-    this.carPlate = carPlate;
     this.isPassenger = isPassenger;
+    this.carPlate = carPlate;
     this.isDriver = isDriver;
   }
 
@@ -55,8 +55,8 @@ export class Account {
       new Name(name),
       new Email(email),
       new Cpf(cpf),
-      new CarPlate(carPlate),
       isPassenger,
+      carPlate ? new CarPlate(carPlate) : undefined,
       isDriver
     );
   }
@@ -75,8 +75,8 @@ export class Account {
       new Name(name),
       new Email(email),
       new Cpf(cpf),
-      new CarPlate(carPlate),
       isPassenger,
+      carPlate ? new CarPlate(carPlate) : undefined,
       isDriver
     );
   }

@@ -25,8 +25,8 @@ test("Deve criar uma conta para o passageiro pela API", async function () {
   const outputGetAccount = responseGetAccount.data;
   // then
   expect(outputSignup.accountId).toBeDefined();
-  expect(outputGetAccount.name).toBe(inputSignup.name);
-  expect(outputGetAccount.email).toBe(inputSignup.email);
+  expect(outputGetAccount.name.value).toBe(inputSignup.name);
+  expect(outputGetAccount.email.value).toBe(inputSignup.email);
 });
 
 test("Deve criar uma conta para o motorista", async function () {
@@ -52,8 +52,8 @@ test("Deve criar uma conta para o motorista", async function () {
   const outputGetAccount = responseGetAccount.data;
   // then
   expect(outputSignup.accountId).toBeDefined();
-  expect(outputGetAccount.name).toBe(inputSignup.name);
-  expect(outputGetAccount.email).toBe(inputSignup.email);
+  expect(outputGetAccount.name.value).toBe(inputSignup.name);
+  expect(outputGetAccount.email.value).toBe(inputSignup.email);
 });
 
 test("Não deve criar uma conta para o motorista com a placa inválida", async function () {

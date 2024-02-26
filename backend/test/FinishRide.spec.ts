@@ -53,11 +53,18 @@ test("Deve verificar se a corrida está em status 'in_progress', se não estiver
 test("Atualizar a corrida com o status 'completed', a distância e o valor da corrida (fare)", async () => {
   const startRide = new StartRide(rideRepository);
   await startRide.execute(rideId);
-  await updatePosition.execute(rideId, -29.7012128, -53.7218208);
-  await updatePosition.execute(rideId, -29.701119, -53.7199577);
-  await updatePosition.execute(rideId, -29.7017541, -53.7179348);
+  await updatePosition.execute(
+    rideId,
+    -27.584905257808835,
+    -48.545022195325124
+  );
+  await updatePosition.execute(
+    rideId,
+    -27.496887588317275,
+    -48.522234807851476
+  );
   const outputFinishRide = await finishRide.execute(rideId);
   expect(outputFinishRide.getStatus()).toBe("completed");
-  expect(outputFinishRide.distance).toBeGreaterThan(0);
-  expect(outputFinishRide.fare).toBeGreaterThan(0);
+  expect(outputFinishRide.getDistance()).toBeCloseTo(10, 1);
+  expect(outputFinishRide.getFare()).toBeGreaterThan(0);
 });

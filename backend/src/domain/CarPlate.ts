@@ -1,6 +1,6 @@
 export class CarPlate {
   constructor(readonly value: string) {
-    if (value || this.isInvalidCarPlate(value))
+    if (!value || this.isInvalidCarPlate(value))
       throw new Error("Invalid car plate");
   }
 

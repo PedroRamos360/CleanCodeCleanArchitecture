@@ -5,6 +5,14 @@ import { Coord } from "./Coord";
 import { FareCalculatorFactory } from "./FareCalculator";
 import { distanceBetweenPoints } from "../math/distanceBetweenPoints";
 
+interface CreateRide {
+  passengerId: string;
+  fromLat: number;
+  fromLong: number;
+  toLat: number;
+  toLong: number;
+}
+
 export class Ride {
   status: RideStatus;
 
@@ -18,20 +26,14 @@ export class Ride {
     readonly fromLong: number,
     readonly toLat: number,
     readonly toLong: number,
+    private lastPosition?: Coord,
     private fare: number = 0,
-    private distance: number = 0,
-    private lastPosition?: Coord
+    private distance: number = 0
   ) {
     this.status = RideStatusFactory.create(status, this);
   }
 
-  static create(
-    passengerId: string,
-    fromLat: number,
-    fromLong: number,
-    toLat: number,
-    toLong: number
-  ) {
+  static create({ fromLat, fromLong, toLat, toLong, passengerId }: CreateRide) {
     const rideId = crypto.randomUUID();
     const driverId = "";
     const status = "requested";
@@ -65,7 +67,7 @@ export class Ride {
   }
 
   updatePosition(position: Position) {
-    if (this.lastPosition) {
+    if (this.lastPosition?.lat && this.lastPosition?.long) {
       this.distance += distanceBetweenPoints(this.lastPosition, position.coord);
     }
     this.lastPosition = position.coord;
@@ -84,7 +86,7 @@ export class Ride {
   }
 
   getDistance() {
-    return this.distance;
+    return Number(this.distance);
   }
 
   getLastPosition() {

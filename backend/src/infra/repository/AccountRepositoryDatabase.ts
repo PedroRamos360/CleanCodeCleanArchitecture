@@ -10,10 +10,10 @@ export class AccountRepositoryDatabase implements AccountRepository {
       "insert into cccat14.account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) values ($1, $2, $3, $4, $5, $6, $7)",
       [
         account.accountId,
-        account.name,
-        account.email,
-        account.cpf,
-        account.carPlate,
+        account.name.value,
+        account.email.value,
+        account.cpf.value,
+        account.carPlate?.value,
         !!account.isPassenger,
         !!account.isDriver,
       ]

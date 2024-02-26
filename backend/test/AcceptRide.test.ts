@@ -27,7 +27,10 @@ beforeEach(async () => {
   requestRide = new RequestRide(rideRepository, accountRepository);
   getRide = new GetRide(rideRepository, accountRepository);
   acceptRide = new AcceptRide(rideRepository, accountRepository);
-  await createRideAndRequestIt(connection);
+  const output = await createRideAndRequestIt(connection);
+  outputRequestRide = output.outputRequestRide;
+  passengerOutput = output.passengerOutput;
+  driverOutput = output.driverOutput;
 });
 
 afterEach(async () => {
