@@ -59,6 +59,7 @@ test("Deve criar uma conta para o passageiro com stub", async function () {
         cpf: inputSignup.cpf,
         isPassenger: inputSignup.isPassenger,
         isDriver: false,
+        creditCardToken: "",
       })
     );
   const outputGetAccount = await getAccount.execute(outputSignup.accountId);

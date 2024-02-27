@@ -26,6 +26,7 @@ export class Signup {
       carPlate: input.carPlate,
       isPassenger: input.isPassenger,
       isDriver: input.isDriver,
+      creditCardToken: crypto.randomBytes(16).toString("hex"),
     });
     await this.accountRepository.save(account);
     return {

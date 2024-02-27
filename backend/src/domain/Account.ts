@@ -9,9 +9,21 @@ interface AccountProps {
   name: string;
   email: string;
   cpf: string;
+  isPassenger: boolean;
+  creditCardToken: string;
   carPlate?: string;
   isDriver?: boolean;
+}
+
+interface Constructor {
+  accountId: string;
+  name: Name;
+  email: Email;
+  cpf: Cpf;
   isPassenger: boolean;
+  creditCardToken: string;
+  carPlate?: CarPlate;
+  isDriver?: boolean;
 }
 
 export class Account {
@@ -20,18 +32,20 @@ export class Account {
   email: Email;
   cpf: Cpf;
   isPassenger: boolean;
+  creditCardToken: string;
   carPlate?: CarPlate;
   isDriver?: boolean;
 
-  private constructor(
-    accountId: string,
-    name: Name,
-    email: Email,
-    cpf: Cpf,
-    isPassenger: boolean,
-    carPlate?: CarPlate,
-    isDriver?: boolean
-  ) {
+  private constructor({
+    accountId,
+    name,
+    email,
+    cpf,
+    isPassenger,
+    carPlate,
+    isDriver,
+    creditCardToken,
+  }: Constructor) {
     this.accountId = accountId;
     this.name = name;
     this.email = email;
@@ -39,6 +53,7 @@ export class Account {
     this.isPassenger = isPassenger;
     this.carPlate = carPlate;
     this.isDriver = isDriver;
+    this.creditCardToken = creditCardToken;
   }
 
   static create({
@@ -48,17 +63,19 @@ export class Account {
     carPlate,
     isPassenger,
     isDriver,
+    creditCardToken,
   }: Omit<AccountProps, "accountId">) {
     const accountId = crypto.randomUUID();
-    return new Account(
+    return new Account({
       accountId,
-      new Name(name),
-      new Email(email),
-      new Cpf(cpf),
+      name: new Name(name),
+      email: new Email(email),
+      cpf: new Cpf(cpf),
       isPassenger,
-      carPlate ? new CarPlate(carPlate) : undefined,
-      isDriver
-    );
+      carPlate: carPlate ? new CarPlate(carPlate) : undefined,
+      isDriver,
+      creditCardToken,
+    });
   }
 
   static restore({
@@ -69,15 +86,17 @@ export class Account {
     carPlate,
     isPassenger,
     isDriver,
+    creditCardToken,
   }: AccountProps) {
-    return new Account(
+    return new Account({
       accountId,
-      new Name(name),
-      new Email(email),
-      new Cpf(cpf),
+      name: new Name(name),
+      email: new Email(email),
+      cpf: new Cpf(cpf),
       isPassenger,
-      carPlate ? new CarPlate(carPlate) : undefined,
-      isDriver
-    );
+      carPlate: carPlate ? new CarPlate(carPlate) : undefined,
+      isDriver,
+      creditCardToken,
+    });
   }
 }

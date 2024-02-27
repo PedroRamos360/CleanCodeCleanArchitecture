@@ -7,7 +7,7 @@ export class AccountRepositoryDatabase implements AccountRepository {
 
   async save(account: Account) {
     await this.connection.query(
-      "insert into cccat14.account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) values ($1, $2, $3, $4, $5, $6, $7)",
+      "insert into cccat14.account (account_id, name, email, cpf, car_plate, is_passenger, is_driver, credit_card_token) values ($1, $2, $3, $4, $5, $6, $7, $8)",
       [
         account.accountId,
         account.name.value,
@@ -16,6 +16,7 @@ export class AccountRepositoryDatabase implements AccountRepository {
         account.carPlate?.value,
         !!account.isPassenger,
         !!account.isDriver,
+        account.creditCardToken,
       ]
     );
   }
@@ -34,6 +35,7 @@ export class AccountRepositoryDatabase implements AccountRepository {
       carPlate: account.car_plate,
       isPassenger: account.is_passenger,
       isDriver: account.is_driver,
+      creditCardToken: account.credit_card_token,
     });
   }
 
@@ -51,6 +53,7 @@ export class AccountRepositoryDatabase implements AccountRepository {
       carPlate: account.car_plate,
       isPassenger: account.is_passenger,
       isDriver: account.is_driver,
+      creditCardToken: account.credit_card_token,
     });
   }
 }

@@ -7,6 +7,7 @@ test("Deve criar uma conta", function () {
     name: "John Doe",
     cpf: "97456321558",
     isPassenger: true,
+    creditCardToken: "123456",
   });
   expect(account.accountId).toBeDefined();
   expect(account.name.value).toBe("John Doe");
