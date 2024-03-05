@@ -22,6 +22,22 @@ export class ORM {
     }
     return obj;
   }
+
+  async delete(model: Model, field: string, value: string) {
+    const query = `delete from ${model.prototype.schema}.${model.prototype.table} where ${field} = $1`;
+    await this.connection.query(query, [value]);
+  }
+
+  async update(model: Model, id: string) {
+    const params = model.columns
+      .map((column, index) => `${column.column} = $${index + 2}`)
+      .join(",");
+    const values = model.columns.map((column: any) => model[column.property]);
+    const query = `update ${model.schema}.${model.table} set ${params} where ${
+      model.columns.find((column) => column.pk)?.column
+    } = $1`;
+    await this.connection.query(query, [id, ...values]);
+  }
 }
 
 export class Model {

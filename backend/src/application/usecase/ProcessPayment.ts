@@ -9,15 +9,10 @@ export class ProcessPayment {
   ) {}
 
   async execute(rideId: string, creditCardToken: string, amount: number) {
-    const transaction = Transaction.create(rideId, "success", amount);
+    const transaction = Transaction.create(rideId, amount);
     if (amount < 0) throw new Error("Invalid amount");
     const ride = await this.rideRepository.getById(rideId);
     if (!ride) throw new Error("Ride not found");
-    const { transactionId } = await this.transactionRepository.save(
-      transaction
-    );
-    return {
-      transactionId,
-    };
+    await this.transactionRepository.save(transaction);
   }
 }

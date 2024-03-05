@@ -12,7 +12,7 @@ import { PgPromiseAdapter } from "../src/infra/database/PgPromiseAdapter";
 import { AccountRepositoryDatabase } from "../src/infra/repository/AccountRepositoryDatabase";
 import { PositionRepositoryDatabase } from "../src/infra/repository/PositionRepositoryDatabase";
 import { RideRepositoryDatabase } from "../src/infra/repository/RideRepositoryDatabase";
-import { TransactionRepositoryDatabase } from "../src/infra/repository/TransactionRepositoryDatabase";
+import TransactionRepositoryORM from "../src/infra/repository/TransactionRepositoryORM";
 import { createRideAndRequestIt } from "./createRideAndRequestIt";
 
 let connection: DatabaseConnection;
@@ -34,7 +34,7 @@ beforeEach(async () => {
   positionRepository = new PositionRepositoryDatabase(connection);
   accountRepository = new AccountRepositoryDatabase(connection);
   rideRepository = new RideRepositoryDatabase(connection);
-  transactionRepository = new TransactionRepositoryDatabase(connection);
+  transactionRepository = new TransactionRepositoryORM(connection);
 
   acceptRide = new AcceptRide(rideRepository, accountRepository);
   updatePosition = new UpdatePosition(positionRepository, rideRepository);
@@ -79,7 +79,7 @@ test("Se a corrida não existir lançar erro", async () => {
 });
 
 test("Deve salvar a transação", async () => {
-  const { transactionId } = await processPayment.execute(rideId, "", 10);
-  const transaction = await transactionRepository.getById(transactionId);
+  await processPayment.execute(rideId, "", 10);
+  const transaction = await transactionRepository.getByRideId(rideId);
   expect(transaction).toBeDefined();
 });
