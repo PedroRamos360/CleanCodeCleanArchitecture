@@ -1,37 +1,38 @@
-import { randomUUID } from "crypto";
+import crypto from "crypto";
 
-type TransactionStatus = "success" | "failed";
-
-interface TransactionProps {
-  transactionId: string;
-  rideId: string;
-  status: TransactionStatus;
-  date: Date;
-  amount: number;
-}
+export type TransactionStatus = "waiting_payment" | "paid";
 
 export class Transaction {
   private constructor(
     readonly transactionId: string,
     readonly rideId: string,
-    readonly status: TransactionStatus,
+    readonly amount: number,
     readonly date: Date,
-    readonly amount: number
+    private status: TransactionStatus
   ) {}
 
-  static create(rideId: string, status: TransactionStatus, amount: number) {
-    const transactionId = randomUUID();
+  static create(rideId: string, amount: number) {
+    const transactionId = crypto.randomUUID();
+    const status = "waiting_payment";
     const date = new Date();
-    return new Transaction(transactionId, rideId, status, date, amount);
+    return new Transaction(transactionId, rideId, amount, date, status);
   }
 
-  static restore(props: TransactionProps) {
-    return new Transaction(
-      props.transactionId,
-      props.rideId,
-      props.status,
-      props.date,
-      props.amount
-    );
+  static restore(
+    transactionId: string,
+    rideId: string,
+    amount: number,
+    date: Date,
+    status: TransactionStatus
+  ) {
+    return new Transaction(transactionId, rideId, amount, date, status);
+  }
+
+  pay() {
+    this.status = "paid";
+  }
+
+  getStatus() {
+    return this.status;
   }
 }
