@@ -1,3 +1,10 @@
+import sinon from "sinon";
+
+sinon.stub(process, "env").value({
+  PORT: 3002,
+  ACCOUNT_PORT: 3001,
+});
+
 import { AcceptRide } from "../src/application/usecase/AcceptRide";
 import GetRide from "../src/application/usecase/GetRide";
 import { RequestRide } from "../src/application/usecase/RequestRide";

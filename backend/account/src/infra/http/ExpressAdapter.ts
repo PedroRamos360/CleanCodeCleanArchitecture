@@ -1,5 +1,6 @@
 import express, { Request, Response, Express } from "express";
 import { HttpMethod, HttpServer } from "./HttpServer";
+import cors from "cors";
 
 export class ExpressAdapter implements HttpServer {
   private app: Express;
@@ -7,6 +8,7 @@ export class ExpressAdapter implements HttpServer {
   constructor() {
     this.app = express();
     this.app.use(express.json());
+    this.app.use(cors());
   }
 
   register(method: HttpMethod, url: string, callback: Function): void {

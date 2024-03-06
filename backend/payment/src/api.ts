@@ -8,6 +8,8 @@ import { PgPromiseAdapter } from "./infra/database/PgPromiseAdapter";
 import { ExpressAdapter } from "./infra/http/ExpressAdapter";
 import { AccountRepositoryDatabase } from "./infra/repository/AccountRepositoryDatabase";
 import { RideRepositoryDatabase } from "./infra/repository/RideRepositoryDatabase";
+import dotenv from "dotenv";
+dotenv.config();
 
 // composition root ou entry point
 // criar o grafo de dependências utilizado no projeto

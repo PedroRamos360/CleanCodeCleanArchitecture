@@ -22,7 +22,7 @@ export class MainController {
       "/accounts/:accountId",
       async function (params: any, body: any) {
         const output = await getAccount.execute(params.accountId);
-        return 1;
+        return output;
       }
     );
   }

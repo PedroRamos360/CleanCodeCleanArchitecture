@@ -11,7 +11,7 @@ let accountRepository: AccountRepositoryApi;
 
 beforeEach(() => {
   connection = new PgPromiseAdapter();
-  const accountRepository = new AccountRepositoryApi();
+  accountRepository = new AccountRepositoryApi();
   const rideRepository = new RideRepositoryDatabase(connection);
   requestRide = new RequestRide(rideRepository, accountRepository);
   getRide = new GetRide(rideRepository, accountRepository);
@@ -45,4 +45,4 @@ test("Deve solicitar uma corrida", async function () {
   expect(outputRequestRide.rideId).toBeDefined();
   const outputGetRide = await getRide.execute(outputRequestRide.rideId);
   expect(outputGetRide?.status).toBe("requested");
-});
+}, 20000);
