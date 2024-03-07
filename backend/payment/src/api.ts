@@ -1,14 +1,11 @@
-import { AcceptRide } from "./application/usecase/AcceptRide";
-import { GetAccount } from "./application/usecase/GetAccount";
-import GetRide from "./application/usecase/GetRide";
-import { RequestRide } from "./application/usecase/RequestRide";
-import { Signup } from "./application/usecase/Signup";
+import dotenv from "dotenv";
+import { ProcessPayment } from "./application/usecase/ProcessPayment";
 import { MainController } from "./infra/controller/MainController";
 import { PgPromiseAdapter } from "./infra/database/PgPromiseAdapter";
 import { ExpressAdapter } from "./infra/http/ExpressAdapter";
-import { AccountRepositoryDatabase } from "./infra/repository/AccountRepositoryDatabase";
-import { RideRepositoryDatabase } from "./infra/repository/RideRepositoryDatabase";
-import dotenv from "dotenv";
+import { RideRepositoryApi } from "./infra/repository/RideRepositoryApi";
+import TransactionRepositoryORM from "./infra/repository/TransactionRepositoryORM";
+import { getEnviormentVariable } from "./env/getEnvironmentVariable";
 dotenv.config();
 
 // composition root ou entry point
@@ -19,23 +16,15 @@ const httpServer = new ExpressAdapter();
 const databaseConnection = new PgPromiseAdapter();
 
 // interface adapter
-const accountRepository = new AccountRepositoryDatabase(databaseConnection);
-const rideRepository = new RideRepositoryDatabase(databaseConnection);
+const transactionRepository = new TransactionRepositoryORM(databaseConnection);
+const rideRepository = new RideRepositoryApi();
 
 // use case
-const signup = new Signup(accountRepository);
-const getAccount = new GetAccount(accountRepository);
-const requestRide = new RequestRide(rideRepository, accountRepository);
-const getRide = new GetRide(rideRepository, accountRepository);
-const acceptRide = new AcceptRide(rideRepository, accountRepository);
+const processPayment = new ProcessPayment(
+  transactionRepository,
+  rideRepository
+);
 
 // interface adapter
-new MainController(
-  httpServer,
-  signup,
-  getAccount,
-  requestRide,
-  getRide,
-  acceptRide
-);
-httpServer.listen(3000);
+new MainController(httpServer, processPayment);
+httpServer.listen(Number(getEnviormentVariable("PAYMENT_PORT")));

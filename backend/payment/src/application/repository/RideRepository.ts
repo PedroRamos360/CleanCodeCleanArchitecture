@@ -1,9 +1,20 @@
-import { Ride } from "../../domain/Ride";
+export interface RequestRideInput {
+  passengerId: string;
+  from: {
+    lat: number;
+    lng: number;
+  };
+  to: {
+    lat: number;
+    lng: number;
+  };
+}
 
 export interface RideRepository {
-  save(ride: Ride): Promise<void>;
-  getById(rideId: string): Promise<Ride | undefined>;
-  getByPassengerId(passengerId: string): Promise<Ride[]>;
-  getRidesByDriverId(driverId: string): Promise<Ride[]>;
-  update(ride: Ride): Promise<void>;
+  requestRide(ride: RequestRideInput): Promise<{ rideId: string }>;
+  acceptRide(rideId: string, driverId: string): Promise<void>;
+  finishRide(rideId: string): Promise<any>;
+  getById(rideId: string): Promise<any>;
+  startRide(rideId: string): Promise<void>;
+  updatePosition(rideId: string, lat: number, long: number): Promise<void>;
 }

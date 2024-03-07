@@ -1,7 +1,15 @@
-import { Account } from "../../domain/Account";
+import { Account } from "../../../../account/src/domain/Account";
+
+export interface SignupInput {
+  name: string;
+  email: string;
+  cpf: string;
+  carPlate?: string;
+  isPassenger: boolean;
+  isDriver?: boolean;
+}
 
 export interface AccountRepository {
-  save(account: Account): Promise<void>;
-  getById(accountId: string): Promise<Account | undefined>;
-  getByEmail(email: string): Promise<Account | undefined>;
+  signup(input: SignupInput): Promise<{ accountId: string }>;
+  getAccount(accountId: string): Promise<Account | undefined>;
 }
