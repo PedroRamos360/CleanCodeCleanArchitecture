@@ -1,5 +1,16 @@
 version: "3.8"
 services:
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: "rabbitmq"
+    restart: always
+    hostname: "rabbitmq"
+    environment:
+      - "RABBITMQ_DEFAULT_PASS=pass"
+      - "RABBITMQ_DEFAULT_USER=user"
+    ports:
+      - 15672:15672
+      - 5672:5672
   postgres:
     image: postgres
     restart: always
