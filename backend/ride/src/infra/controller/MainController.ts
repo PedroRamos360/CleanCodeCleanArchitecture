@@ -4,10 +4,15 @@ import GetRide from "../../application/usecase/GetRide";
 import { RequestRide } from "../../application/usecase/RequestRide";
 import { StartRide } from "../../application/usecase/StartRide";
 import { UpdatePosition } from "../../application/usecase/UpdatePosition";
+import { inject } from "../di/Registry";
 import { HttpServer } from "../http/HttpServer";
+import Queue from "../queue/Queue";
 
 // Interface Adapter
 export class MainController {
+  @inject("queue")
+  queue?: Queue;
+
   constructor(
     readonly httpServer: HttpServer,
     requestRide: RequestRide,
@@ -23,6 +28,13 @@ export class MainController {
       async function (params: any, body: any) {
         const output = await requestRide.execute(body);
         return output;
+      }
+    );
+    httpServer.register(
+      "post",
+      "/request_ride_async",
+      async (params: any, body: any) => {
+        await this.queue?.publish("requestRide", body);
       }
     );
     httpServer.register(

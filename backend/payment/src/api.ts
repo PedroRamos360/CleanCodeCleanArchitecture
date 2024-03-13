@@ -6,6 +6,9 @@ import { ExpressAdapter } from "./infra/http/ExpressAdapter";
 import { RideRepositoryApi } from "./infra/repository/RideRepositoryApi";
 import TransactionRepositoryORM from "./infra/repository/TransactionRepositoryORM";
 import { getEnviormentVariable } from "./env/getEnvironmentVariable";
+import Queue from "./infra/queue/Queue";
+import Registry from "./infra/di/Registry";
+import QueueController from "./infra/queue/QueueController";
 dotenv.config();
 
 // composition root ou entry point
@@ -18,13 +21,20 @@ const databaseConnection = new PgPromiseAdapter();
 // interface adapter
 const transactionRepository = new TransactionRepositoryORM(databaseConnection);
 const rideRepository = new RideRepositoryApi();
+const queue = new Queue();
 
 // use case
 const processPayment = new ProcessPayment(
   transactionRepository,
-  rideRepository
+  rideRepository,
+  queue
 );
+
+const registry = Registry.getInstance();
+registry.register("queue", queue);
+registry.register("processPayment", processPayment);
 
 // interface adapter
 new MainController(httpServer, processPayment);
+new QueueController();
 httpServer.listen(Number(getEnviormentVariable("PAYMENT_PORT")));

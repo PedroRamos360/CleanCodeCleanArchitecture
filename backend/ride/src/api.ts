@@ -29,12 +29,13 @@ const databaseConnection = new PgPromiseAdapter();
 const accountRepository = new AccountRepositoryApi();
 const rideRepository = new RideRepositoryDatabase(databaseConnection);
 const positionRepository = new PositionRepositoryDatabase(databaseConnection);
+const queue = new Queue();
 
 // use case
 const requestRide = new RequestRide(rideRepository, accountRepository);
 const getRide = new GetRide(rideRepository, accountRepository);
 const acceptRide = new AcceptRide(rideRepository, accountRepository);
-const finishRide = new FinishRide(rideRepository);
+const finishRide = new FinishRide(rideRepository, queue);
 const startRide = new StartRide(rideRepository);
 const updatePosition = new UpdatePosition(positionRepository, rideRepository);
 const sendReceipt = new SendReceipt();

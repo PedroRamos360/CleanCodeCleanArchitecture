@@ -7,6 +7,7 @@ import { StartRide } from "../src/application/usecase/StartRide";
 import { UpdatePosition } from "../src/application/usecase/UpdatePosition";
 import { DatabaseConnection } from "../src/infra/database/DatabaseConnection";
 import { PgPromiseAdapter } from "../src/infra/database/PgPromiseAdapter";
+import Queue from "../src/infra/queue/Queue";
 import { AccountRepositoryApi } from "../src/infra/repository/AccountRepositoryApi";
 import { PositionRepositoryDatabase } from "../src/infra/repository/PositionRepositoryDatabase";
 import { RideRepositoryDatabase } from "../src/infra/repository/RideRepositoryDatabase";
@@ -30,7 +31,8 @@ beforeEach(async () => {
   rideRepository = new RideRepositoryDatabase(connection);
   acceptRide = new AcceptRide(rideRepository, accountRepository);
   updatePosition = new UpdatePosition(positionRepository, rideRepository);
-  finishRide = new FinishRide(rideRepository);
+  const queue = new Queue();
+  finishRide = new FinishRide(rideRepository, queue);
 
   const { outputRequestRide, driverOutput } = await createRideAndRequestIt(
     connection

@@ -1,24 +1,16 @@
-import { RequestRide } from "../../application/usecase/RequestRide";
-import { SendReceipt } from "../../application/usecase/SendReceipt";
-
+import { ProcessPayment } from "../../application/usecase/ProcessPayment";
 import { inject } from "../di/Registry";
 import Queue from "./Queue";
 
 export default class QueueController {
   @inject("queue")
   queue?: Queue;
-  @inject("sendReceipt")
-  sendReceipt?: SendReceipt;
-  @inject("requestRide")
-  requestRide?: RequestRide;
+  @inject("processPayment")
+  processPayment?: ProcessPayment;
 
   constructor() {
-    this.queue?.consume("paymentApproved", async (input: any) => {
-      await this.sendReceipt?.execute(input);
-    });
-
-    this.queue?.consume("requestRide", async (input: any) => {
-      await this.requestRide?.execute(input);
+    this.queue?.consume("rideCompleted", async (input: any) => {
+      await this.processPayment?.execute(input);
     });
   }
 }

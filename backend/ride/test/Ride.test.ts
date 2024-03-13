@@ -3,10 +3,10 @@ import { Ride } from "../src/domain/Ride";
 
 test("Deve testar uma ride", function () {
   const ride = Ride.create({
-    fromLat: -27.584905257808835,
-    fromLong: -48.545022195325124,
-    toLat: -27.496887588317275,
-    toLong: -48.522234807851476,
+    fromLat: 0,
+    fromLong: 0,
+    toLat: 0,
+    toLong: 0,
     passengerId: "",
   });
   ride.accept("");
@@ -23,5 +23,8 @@ test("Deve testar uma ride", function () {
   ride.updatePosition(position2);
   ride.finish();
   expect(ride.getDistance()).toBeCloseTo(10, 0);
-  expect(ride.getFare()).toBeCloseTo(21, 0);
+  const date = new Date();
+  if (date.getHours() >= 8 && date.getHours() <= 22)
+    expect(ride.getFare()).toBeCloseTo(21, 0);
+  else expect(ride.getFare()).toBeCloseTo(50, 0);
 });
