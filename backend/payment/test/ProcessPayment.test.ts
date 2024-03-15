@@ -3,6 +3,7 @@ import { TransactionRepository } from "../src/application/repository/Transaction
 import { ProcessPayment } from "../src/application/usecase/ProcessPayment";
 import { DatabaseConnection } from "../src/infra/database/DatabaseConnection";
 import { PgPromiseAdapter } from "../src/infra/database/PgPromiseAdapter";
+import Queue from "../src/infra/queue/Queue";
 import { RideRepositoryApi } from "../src/infra/repository/RideRepositoryApi";
 import TransactionRepositoryORM from "../src/infra/repository/TransactionRepositoryORM";
 import { createRideRequestFinish } from "./createRideRequestFinish";
@@ -19,8 +20,13 @@ beforeEach(async () => {
   connection = new PgPromiseAdapter();
   rideRepository = new RideRepositoryApi();
   transactionRepository = new TransactionRepositoryORM(connection);
+  const queue = new Queue();
 
-  processPayment = new ProcessPayment(transactionRepository, rideRepository);
+  processPayment = new ProcessPayment(
+    transactionRepository,
+    rideRepository,
+    queue
+  );
 
   const { outputRequestRide } = await createRideRequestFinish();
   rideId = outputRequestRide.rideId;

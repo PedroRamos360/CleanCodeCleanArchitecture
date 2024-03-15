@@ -6,7 +6,7 @@ axios.defaults.validateStatus = function () {
   return true;
 };
 
-export default class AccountGatewayHttp implements AccountGateway {
+export class AccountGatewayHttp implements AccountGateway {
   async signup(input: any): Promise<any> {
     const response = await axios.post(
       `http://localhost:${getEnviormentVariable("ACCOUNT_PORT")}/signup`,

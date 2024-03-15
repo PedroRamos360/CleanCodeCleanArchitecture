@@ -1,7 +1,8 @@
 import axios from "axios";
-import { Account } from "../../../../account/src/domain/Account";
+
 import { getEnviormentVariable } from "../../env/getEnvironmentVariable";
 import { AccountRepository } from "../../application/repository/AccountRepository";
+import { Account } from "../../domain/Account";
 
 interface SignupInput {
   name: string;

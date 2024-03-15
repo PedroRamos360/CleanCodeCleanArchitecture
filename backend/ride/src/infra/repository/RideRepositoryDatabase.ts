@@ -102,6 +102,27 @@ export class RideRepositoryDatabase implements RideRepository {
     );
   }
 
+  async getActiveRideByPassengerId(
+    passengerId: string
+  ): Promise<Ride | undefined> {
+    const [ride] = await this.connection.query(
+      "select * from cccat14.ride where passenger_id = $1 and status in ('requested', 'accepted', 'in_progress')",
+      [passengerId]
+    );
+    if (!ride) return;
+    return new Ride(
+      ride.ride_id,
+      ride.passenger_id,
+      ride.driver_id,
+      ride.status,
+      ride.date,
+      parseFloat(ride.from_lat),
+      parseFloat(ride.from_long),
+      parseFloat(ride.to_lat),
+      parseFloat(ride.to_long)
+    );
+  }
+
   async getRidesByDriverId(driverId: string): Promise<Ride[]> {
     const rides = await this.connection.query(
       "select * from cccat14.ride where driver_id = $1",

@@ -5,7 +5,6 @@ import { RideRepositoryDatabase } from "../src/infra/repository/RideRepositoryDa
 import { StartRide } from "../src/application/usecase/StartRide";
 import { PgPromiseAdapter } from "../src/infra/database/PgPromiseAdapter";
 import { AccountRepositoryApi } from "../src/infra/repository/AccountRepositoryApi";
-import { Account } from "../../account/src/domain/Account";
 
 let requestRide: RequestRide;
 let getRide: GetRide;

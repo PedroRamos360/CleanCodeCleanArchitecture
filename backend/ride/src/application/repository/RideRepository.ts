@@ -5,5 +5,6 @@ export interface RideRepository {
   getById(rideId: string): Promise<Ride | undefined>;
   getByPassengerId(passengerId: string): Promise<Ride[]>;
   getRidesByDriverId(driverId: string): Promise<Ride[]>;
+  getActiveRideByPassengerId(passengerId: string): Promise<Ride | undefined>;
   update(ride: Ride): Promise<void>;
 }

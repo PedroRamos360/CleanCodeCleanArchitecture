@@ -1,12 +1,12 @@
+import axios from "axios";
+import { AccountRepository } from "../src/application/repository/AccountRepository";
+import GetRideByPassengerId from "../src/application/usecase/GetRideByPassengerId";
+import { RequestRide } from "../src/application/usecase/RequestRide";
 import { DatabaseConnection } from "../src/infra/database/DatabaseConnection";
 import { PgPromiseAdapter } from "../src/infra/database/PgPromiseAdapter";
-import { RequestRide } from "../src/application/usecase/RequestRide";
+import { AccountRepositoryApi } from "../src/infra/repository/AccountRepositoryApi";
 import { RideRepositoryDatabase } from "../src/infra/repository/RideRepositoryDatabase";
-import { PositionRepositoryDatabase } from "../src/infra/repository/PositionRepositoryDatabase";
-import AccountGatewayHttp from "../src/infra/gateway/AccountGatewayHttp";
-import AccountGateway from "../src/application/gateway/AccountGateway";
-import axios from "axios";
-import GetRideByPassengerId from "../src/application/usecase/GetRideByPassengerId";
+import { getEnviormentVariable } from "../src/env/getEnvironmentVariable";
 
 async function sleep(time: number) {
   return new Promise((resolve) => {
@@ -19,19 +19,14 @@ async function sleep(time: number) {
 let requestRide: RequestRide;
 let getRideByPassengerId: GetRideByPassengerId;
 let databaseConnection: DatabaseConnection;
-let accountGateway: AccountGateway;
+let accountRepository: AccountRepository;
 
 beforeEach(() => {
   databaseConnection = new PgPromiseAdapter();
   const rideRepository = new RideRepositoryDatabase(databaseConnection);
-  const positionRepository = new PositionRepositoryDatabase(databaseConnection);
-  accountGateway = new AccountGatewayHttp();
-  requestRide = new RequestRide(rideRepository, accountGateway);
-  getRideByPassengerId = new GetRideByPassengerId(
-    rideRepository,
-    positionRepository,
-    logger
-  );
+  accountRepository = new AccountRepositoryApi();
+  requestRide = new RequestRide(rideRepository, accountRepository);
+  getRideByPassengerId = new GetRideByPassengerId(rideRepository);
 });
 
 test("Deve solicitar uma corrida", async function () {
@@ -42,16 +37,20 @@ test("Deve solicitar uma corrida", async function () {
     isPassenger: true,
     password: "123456",
   };
-  const outputSignup = await accountGateway.signup(inputSignup);
+  const outputSignup = await accountRepository.signup(inputSignup);
   const inputRequestRide = {
     passengerId: outputSignup.accountId,
-    fromLat: -27.584905257808835,
-    fromLong: -48.545022195325124,
-    toLat: -27.496887588317275,
-    toLong: -48.522234807851476,
+    from: {
+      lat: -27.584905257808835,
+      lng: -48.545022195325124,
+    },
+    to: {
+      lat: -27.496887588317275,
+      lng: -48.522234807851476,
+    },
   };
   await axios.post(
-    "http://localhost:3000/request_ride_async",
+    `http://localhost:${getEnviormentVariable("RIDE_PORT")}/request_ride_async`,
     inputRequestRide
   );
   await sleep(200);
