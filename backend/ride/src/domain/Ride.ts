@@ -4,6 +4,8 @@ import { Position } from "./Position";
 import { Coord } from "./Coord";
 import { FareCalculatorFactory } from "./FareCalculator";
 import { distanceBetweenPoints } from "../math/distanceBetweenPoints";
+import Aggregate from "./Aggregate";
+import { RideCompletedEvent } from "./event/RideCompletedEvent";
 
 interface CreateRide {
   passengerId: string;
@@ -13,7 +15,7 @@ interface CreateRide {
   toLong: number;
 }
 
-export class Ride {
+export class Ride extends Aggregate {
   status: RideStatus;
 
   constructor(
@@ -30,6 +32,7 @@ export class Ride {
     private fare: number = 0,
     private distance: number = 0
   ) {
+    super();
     this.status = RideStatusFactory.create(status, this);
   }
 
@@ -64,6 +67,7 @@ export class Ride {
     const fareCalculator = FareCalculatorFactory.create(this.date);
     this.fare = fareCalculator.calculate(this.distance);
     this.status.finish();
+    this.notify(new RideCompletedEvent(this.rideId, this.fare));
   }
 
   updatePosition(position: Position) {

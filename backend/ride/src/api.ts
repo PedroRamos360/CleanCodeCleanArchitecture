@@ -15,7 +15,9 @@ import QueueController from "./infra/queue/QueueController";
 import { AccountRepositoryApi } from "./infra/repository/AccountRepositoryApi";
 import { PositionRepositoryDatabase } from "./infra/repository/PositionRepositoryDatabase";
 import { RideRepositoryDatabase } from "./infra/repository/RideRepositoryDatabase";
+import { UpdateRideProjectionAPIComposition } from "./application/usecase/UpdateRideProjectionAPIComposition";
 import dotenv from "dotenv";
+import { AccountGatewayHttp } from "./infra/gateway/AcountGatewayHttp";
 dotenv.config();
 
 // composition root ou entry point
@@ -29,6 +31,7 @@ const databaseConnection = new PgPromiseAdapter();
 const accountRepository = new AccountRepositoryApi();
 const rideRepository = new RideRepositoryDatabase(databaseConnection);
 const positionRepository = new PositionRepositoryDatabase(databaseConnection);
+const accountGateway = new AccountGatewayHttp();
 const queue = new Queue();
 
 // use case
@@ -39,12 +42,17 @@ const finishRide = new FinishRide(rideRepository, queue);
 const startRide = new StartRide(rideRepository);
 const updatePosition = new UpdatePosition(positionRepository, rideRepository);
 const sendReceipt = new SendReceipt();
+const updateRideProjection = new UpdateRideProjectionAPIComposition(
+  databaseConnection,
+  accountGateway
+);
 
 // registry
 const registry = Registry.getInstance();
 registry.register("requestRide", requestRide);
 registry.register("queue", new Queue());
 registry.register("sendReceipt", sendReceipt);
+registry.register("updateRideProjection", updateRideProjection);
 
 // interface adapter
 new MainController(

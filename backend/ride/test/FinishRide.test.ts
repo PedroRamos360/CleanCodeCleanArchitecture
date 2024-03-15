@@ -1,3 +1,4 @@
+import { GetRideQuery } from "../src/application/query/GetRideQuery";
 import { AccountRepository } from "../src/application/repository/AccountRepository";
 import { PositionRepository } from "../src/application/repository/PositionRepository";
 import { RideRepository } from "../src/application/repository/RideRepository";
@@ -20,6 +21,7 @@ let rideRepository: RideRepository;
 let acceptRide: AcceptRide;
 let updatePosition: UpdatePosition;
 let finishRide: FinishRide;
+let getRide: GetRideQuery;
 
 let driverId: string;
 let rideId: string;
@@ -30,6 +32,7 @@ beforeEach(async () => {
   accountRepository = new AccountRepositoryApi();
   rideRepository = new RideRepositoryDatabase(connection);
   acceptRide = new AcceptRide(rideRepository, accountRepository);
+  getRide = new GetRideQuery(connection);
   updatePosition = new UpdatePosition(positionRepository, rideRepository);
   const queue = new Queue();
   finishRide = new FinishRide(rideRepository, queue);
@@ -65,8 +68,12 @@ test("Atualizar a corrida com o status 'completed', a distância e o valor da co
     -27.496887588317275,
     -48.522234807851476
   );
-  const outputFinishRide = await finishRide.execute(rideId);
-  expect(outputFinishRide.getStatus()).toBe("completed");
-  expect(outputFinishRide.getDistance()).toBeCloseTo(10, 1);
-  expect(outputFinishRide.getFare()).toBeGreaterThan(0);
+  await finishRide.execute(rideId);
+  const outputGetRide = await getRide.execute(rideId);
+  expect(outputGetRide.status).toBe("completed");
+  expect(outputGetRide.distance).toBeCloseTo(10, 1);
+  expect(outputGetRide.fare).toBeCloseTo(21, 0);
+  expect(outputGetRide.passengerName).toBe("John Doe");
+  expect(outputGetRide.passengerCpf).toBe("97456321558");
+  expect(outputGetRide.driverCarPlate).toBe("AAA9999");
 });

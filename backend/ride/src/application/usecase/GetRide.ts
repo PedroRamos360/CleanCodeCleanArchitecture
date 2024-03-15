@@ -1,4 +1,4 @@
-import { Account } from "../../../../account/src/domain/Account";
+import { Account } from "../../domain/Account";
 import { Ride } from "../../domain/Ride";
 import { AccountRepository } from "../repository/AccountRepository";
 import { RideRepository } from "../repository/RideRepository";

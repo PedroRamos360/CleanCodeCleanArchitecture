@@ -1,4 +1,4 @@
-import { Account } from "../../../../account/src/domain/Account";
+import { Account } from "../../domain/Account";
 
 export interface SignupInput {
   name: string;
