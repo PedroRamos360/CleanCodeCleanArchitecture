@@ -1,6 +1,7 @@
 backend/account/node_modules
 backend/ride/node_modules
 backend/payment/node_modules
+frontend/node_modules
 
 backend/dist
 backend/.vscode
